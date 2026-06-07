@@ -18,13 +18,29 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+
+    const db = client.db("ticketoDb")
+    const organizationCollection = db.collection("organiztions")
+    const eventCollection = db.collection("events")
+    const bookingCollection = db.collection("bookings")
+    const paymentCollection = db.collection("payments")
+
+
+    app.post("/app/organizations", async(req, res) =>{
+      const {organizationName, logo, website, description, organizerEmail} = req.body
+      const addData = {organizationName, logo, website, description, organizerEmail, createdAt: new Date(), status: 'active'}
+      const result = await organizationCollection.insertOne(addData)
+      return result
+
+    })
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
